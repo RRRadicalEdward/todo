@@ -1,4 +1,4 @@
-An app to manage TODO list
+<h2> An app to manage TODO list </h2>
 
 1. Build the backend 
 ```cargo build --release```
@@ -7,8 +7,9 @@ An app to manage TODO list
 4. Use it
 
 
-Example
+<h3> Example usage </h3>
 
+[![example](example/example.png)](example/example-usage.webm "Example usage")
 
 
 
