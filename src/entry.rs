@@ -3,17 +3,15 @@ use rocket::{
     http::{ContentType, Status},
     response::Responder,
     Request, Response,
+    serde::{json as serde_json, Deserialize, Serialize, uuid::Uuid},
 };
-use serde::{Deserialize, Serialize};
 use std::io::Cursor;
-use uuid::Uuid;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Entry {
     pub uuid: Uuid,
     pub title: String,
-    pub status: bool,
 }
 
 impl Entry {
@@ -21,12 +19,12 @@ impl Entry {
         Entry {
             uuid: Uuid::new_v4(),
             title: request.title,
-            status: false,
         }
     }
 }
 
 #[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
 pub struct Entries(pub Vec<Entry>);
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

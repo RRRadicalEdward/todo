@@ -3,13 +3,10 @@ name = "todo"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-rocket = { version = "0.5.0-rc.2", features = ["json", "uuid"] }
+rocket = { version = "0.5.0-rc.2", default-features = false, features = ["json", "uuid"] }
 diesel = { version = "2.0.2",  default-features = false, features = ["sqlite", "r2d2"] }
-serde = { version = "1.0.152", features = ["derive"] }
-uuid = { version = "1.2.2", features = ["v4"] }
-serde_json = "1.0.91"
+uuid = { version = "1.2.2", default-features = false, features = ["v4"] }
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors.git", default-features = false, rev = "c17e8145baa4790319fdb6a473e465b960f55e7c" }
 
 

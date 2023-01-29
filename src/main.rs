@@ -13,24 +13,32 @@ use rocket::{
     post, routes,
     serde::{json::Json, uuid::Uuid},
 };
+use rocket_cors::CorsOptions;
 
 #[rocket::main]
 async fn main() {
+    let cors = CorsOptions::default()
+        .to_cors()
+        .expect("CorsOptions::default() should never fail");
+
     let _ = rocket::build()
         .manage(db::establish_connection())
-        .mount("/", routes![create, list, resolve])
+        .mount("/", routes![create, list, delete])
+        .attach(cors)
         .launch()
         .await
         .unwrap();
 }
 
 #[post("/create", data = "<entry>")]
-pub async fn create(entry: Json<EntryRequest>, connection: DbConn) -> Status { // return UUID
-    match db::create(connection, Entry::new(entry.0)) {
-        Ok(_) => Status::Ok,
+pub async fn create(entry: Json<EntryRequest>, connection: DbConn) -> Result<Json<Uuid>, Status> {
+    let entry = Entry::new(entry.0);
+    let uuid = entry.uuid;
+    match db::create(connection, entry) {
+        Ok(_) => Ok(Json(uuid)),
         Err(err) => {
             error!("{}:{} db::create failed: {err}", line!(), file!());
-            Status::InternalServerError
+            Err(Status::InternalServerError)
         }
     }
 }
@@ -41,18 +49,6 @@ async fn list(connection: DbConn) -> Result<Entries, Status> {
         Ok(entries) => Ok(entries),
         Err(err) => {
             error!("{}:{} db::list failed: {err}", line!(), file!());
-            Err(Status::InternalServerError)
-        }
-    }
-}
-
-#[post("/resolve", data = "<uuid>")]
-pub async fn resolve(uuid: Json<Uuid>, connection: DbConn) -> Result<(), Status> {
-    match db::resolve(connection, uuid.0) {
-        Ok(_) => Ok(()),
-        Err(err) if err.eq(&DieselError::NotFound) => Err(Status::NotFound),
-        Err(err) => {
-            error!("{}:{} db::resolve failed: {err}", line!(), file!());
             Err(Status::InternalServerError)
         }
     }

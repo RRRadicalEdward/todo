@@ -2,8 +2,7 @@
 
 diesel::table! {
     entry (uuid) {
-        uuid -> Binary,
+        uuid -> Text,
         title -> Text,
-        status -> Integer,
     }
 }
